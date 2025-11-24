@@ -39,8 +39,8 @@ const Login = async (req, res) => {
     // Store cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // Set to true only in production with HTTPS
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });

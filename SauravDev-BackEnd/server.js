@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import MainRouter from "./Routes/index.js";
 
 const app = express();
+app.set("trust proxy", 1);
 dotenv.config();
 app.use(cookieParser());
 app.use(express.json());
