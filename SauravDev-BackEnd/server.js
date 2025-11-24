@@ -15,6 +15,7 @@ const corsOptions = {
     "http://localhost:5174",
     "http://localhost:5173",
     "https://sauravshowcase.netlify.app",
+    "https://personalportfolio-production-eb7b.up.railway.app",
   ],
   credentials: true,
   optionsSuccessStatus: 200,
