@@ -1,9 +1,4 @@
 import Project from "../Models/project.schema.js";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const CreateProject = async (req, res) => {
   try {
@@ -33,22 +28,9 @@ const CreateProject = async (req, res) => {
 
     const processedTags = tags ? tags.split(",").map((t) => t.trim()) : [];
 
-    // Handle image URL for different environments
-    let imageUrl;
-    if (req.file) {
-      // For production - use your actual domain
-      if (process.env.NODE_ENV === "production") {
-        // Replace with your actual domain
-        imageUrl = `https://personalportfolio-production-eb7b.up.railway.app/uploads/${req.file.filename}`;
-      } else {
-        // For local development
-        imageUrl = `http://localhost:8000/uploads/${req.file.filename}`;
-      }
-    } else {
-      // Default placeholder image
-      imageUrl =
-        "https://via.placeholder.com/800x400/2a9d8f/ffffff?text=Project+Image";
-    }
+    const imageUrl = req.file
+      ? `/uploads/${req.file.filename}`
+      : "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
 
     const project = new Project({
       title,
