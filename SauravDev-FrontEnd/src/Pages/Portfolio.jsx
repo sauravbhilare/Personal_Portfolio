@@ -158,7 +158,7 @@ const Portfolio = () => {
                       />
                       {/* Show project status badge */}
                       <div className="project-status-badge">
-                        <span className="status-completed">Completed</span>
+                        <span className="status-completed">{item.status}</span>
                       </div>
                     </div>
                     <div className="portfolio-info">
