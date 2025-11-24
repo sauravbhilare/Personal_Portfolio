@@ -1,7 +1,7 @@
 [build]
 base = "SauravDev-FrontEnd"
 command = "npm install && npm run build"
-publish = "SauravDev-FrontEnd/build"
+publish = "SauravDev-FrontEnd/dist"
 
 [dev]
 command = "npm start"
