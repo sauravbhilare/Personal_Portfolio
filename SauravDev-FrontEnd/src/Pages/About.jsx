@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "../style/About.css";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
+import useImg from "../assets/PHOTOS.jpeg";
 
 const About = () => {
   const skillRefs = useRef([]);
@@ -113,7 +114,7 @@ const About = () => {
           {/* Main Content - Original Layout */}
           <div className="about-content">
             <div className="about-img">
-              <img src="../../src/assets/PHOTOS.jpeg" alt="Saurav Bhilare" />
+              <img src={useImg} alt="Saurav Bhilare" />
             </div>
             <div className="about-text">
               <h2>Fullstack Web Developer</h2>
