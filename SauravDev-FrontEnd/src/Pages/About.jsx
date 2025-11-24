@@ -113,14 +113,7 @@ const About = () => {
           {/* Main Content - Original Layout */}
           <div className="about-content">
             <div className="about-img">
-              <img
-                src="../../src/assets/PHOTOS.jpeg"
-                alt="Saurav Bhilare"
-                onError={(e) => {
-                  e.target.src =
-                    "https://via.placeholder.com/400x400/2a9d8f/ffffff?text=SB";
-                }}
-              />
+              <img src="../../src/assets/PHOTOS.jpeg" alt="Saurav Bhilare" />
             </div>
             <div className="about-text">
               <h2>Fullstack Web Developer</h2>
