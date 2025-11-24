@@ -16,7 +16,6 @@ function App() {
   const user = useSelector((state) => state.user.userInfo);
 
   async function getUserData() {
-    debugger;
     try {
       const response = await axios.get(
         "http://localhost:8000/api/v1/auth/loggedInUser",

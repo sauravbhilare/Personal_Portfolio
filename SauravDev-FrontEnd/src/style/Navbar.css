@@ -112,6 +112,7 @@
 
 /* Hide menu toggle button and mobile icons on desktop */
 .menu-toggle {
+  position: initial !important;
   display: none;
   cursor: pointer;
   background: none;

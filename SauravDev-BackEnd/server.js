@@ -10,7 +10,11 @@ dotenv.config();
 app.use(cookieParser());
 app.use(express.json());
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://sauravshowcase.netlify.app/"],
+  origin: [
+    "http://localhost:5174/",
+    "http://localhost:5173",
+    "https://sauravshowcase.netlify.app/",
+  ],
   credentials: true,
   optionSuccessStatus: 200,
 };
