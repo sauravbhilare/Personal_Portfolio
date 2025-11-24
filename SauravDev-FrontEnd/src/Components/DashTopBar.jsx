@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../style/DashTopBar.css";
-import axios from "axios";
+import api from "../Services/apiConfig.js";
 import { logout } from "../../Redux/store";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -66,8 +66,8 @@ const DashTopBar = ({ onProfileUpdate }) => {
       }
 
       // Use PUT request with the correct endpoint and user ID
-      const response = await axios.put(
-        `http://localhost:8000/api/v1/auth/updateProfile/${userId}`,
+      const response = await api.put(
+        `/auth/updateProfile/${userId}`,
         profileData,
         {
           withCredentials: true,
@@ -133,10 +133,7 @@ const DashTopBar = ({ onProfileUpdate }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/v1/auth/logout",
-        { withCredentials: true }
-      );
+      const response = await api.get("/auth/logout", { withCredentials: true });
 
       if (response.data.success) {
         dispatch(logout());

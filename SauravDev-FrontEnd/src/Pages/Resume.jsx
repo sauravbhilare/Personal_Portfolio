@@ -5,12 +5,10 @@ import "../style/Resume.css";
 import Resumefile from "../assets/SauravBhilare-Resume.pdf";
 
 const Resume = () => {
-  // FIXED: Download Resume Function
   const downloadResume = () => {
     try {
-      // Method 1: Using the imported Resume directly (Recommended)
       const link = document.createElement("a");
-      link.href = Resumefile; // ✅ Fixed: Removed curly braces
+      link.href = Resumefile;
       link.download = "SauravBhilare-Resume.pdf";
       document.body.appendChild(link);
       link.click();
@@ -18,31 +16,8 @@ const Resume = () => {
     } catch (error) {
       console.error("Error downloading resume:", error);
 
-      // Fallback method
       window.open(Resume, "_blank");
     }
-  };
-
-  // Alternative Method 2: If Method 1 doesn't work
-  const downloadResumeAlternative = () => {
-    // Create a blob URL for better compatibility
-    fetch(Resume)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "Saurav_Bhilare_Frontend_Developer_Resume.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((error) => {
-        console.error("Error downloading resume:", error);
-        // Final fallback - open in new tab
-        window.open(Resume, "_blank");
-      });
   };
 
   return (

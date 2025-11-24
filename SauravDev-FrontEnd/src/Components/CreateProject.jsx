@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../style/CreateProject.css";
-import axios from "axios";
+import api from "../Services/apiConfig.js";
 
 const CreateProject = () => {
   const [formData, setFormData] = useState({
@@ -61,15 +61,11 @@ const CreateProject = () => {
         formDataToSend.append("image", formData.image);
       }
 
-      const res = await axios.post(
-        "http://localhost:8000/api/v1/project/createProject",
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await api.post("/project/createProject", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res.data.success) {
         alert("Project created successfully!");

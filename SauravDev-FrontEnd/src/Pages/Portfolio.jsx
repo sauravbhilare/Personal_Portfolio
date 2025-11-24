@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../style/Portfolio.css";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
-import axios from "axios";
+import api from "../Services/apiConfig.js";
 
 const Portfolio = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,9 +20,7 @@ const Portfolio = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        "http://localhost:8000/api/v1/project/getProjects"
-      );
+      const response = await api.get("/project/getProjects");
 
       if (response.data.success) {
         const projects = response.data.projects || [];

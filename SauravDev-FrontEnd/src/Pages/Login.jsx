@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import "../style/Login.css";
 import { login } from "../../Redux/store";
+import api from "../Services/apiConfig.js";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -79,11 +79,9 @@ const Login = () => {
     setLoginError("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/v1/auth/login",
-        formData,
-        { withCredentials: true }
-      );
+      const response = await api.post("/auth/login", formData, {
+        withCredentials: true,
+      });
 
       if (response.data.success) {
         dispatch(login(response.data.user));

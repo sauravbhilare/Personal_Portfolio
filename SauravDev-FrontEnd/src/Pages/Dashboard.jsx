@@ -47,7 +47,6 @@ const Dashboard = () => {
 
   // Fetch user profile data on component mount
   useEffect(() => {
-    debugger;
     const fetchUserProfile = async () => {
       try {
         if (!user) {

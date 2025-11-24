@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../style/ViewProjects.css";
-import axios from "axios";
+import api from "../Services/apiConfig.js";
 
 const ViewProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -22,9 +22,7 @@ const ViewProjects = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        "http://localhost:8000/api/v1/project/getProjects"
-      );
+      const response = await api.get("/project/getProjects");
 
       if (response.data.success) {
         setProjects(response.data.projects || []);
@@ -81,8 +79,8 @@ const ViewProjects = () => {
         formData.append("image", editImage);
       }
 
-      const response = await axios.put(
-        `http://localhost:8000/api/v1/project/updateProject/${editingProject}`,
+      const response = await api.put(
+        `/project/updateProject/${editingProject}`,
         formData,
         {
           headers: {
@@ -118,8 +116,8 @@ const ViewProjects = () => {
     ) {
       try {
         setActionLoading("delete");
-        const response = await axios.delete(
-          `http://localhost:8000/api/v1/project/deleteProject/${projectId}`
+        const response = await api.delete(
+          `/project/deleteProject/${projectId}`
         );
 
         if (response.data.success) {

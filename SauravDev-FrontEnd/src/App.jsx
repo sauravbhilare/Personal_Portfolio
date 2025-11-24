@@ -10,17 +10,16 @@ import Contact from "./Pages/Contact.jsx";
 import Login from "./Pages/Login.jsx";
 import Registeration from "./Pages/Registration.jsx";
 import Dashboard from "./Pages/Dashboard.jsx";
-import axios from "axios";
+import api from "./Services/apiConfig.js";
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userInfo);
 
   async function getUserData() {
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/v1/auth/loggedInUser",
-        { withCredentials: true }
-      );
+      const response = await api.get("/auth/loggedInUser", {
+        withCredentials: true,
+      });
       console.log("user data", response.data);
       if (response.data.success) {
         dispatch(login(response.data.user));

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../style/DashboardContent.css";
-import axios from "axios";
+import api from "../Services/apiConfig.js";
 
 const DashboardContent = () => {
   const [projects, setProjects] = useState([]);
@@ -18,9 +18,7 @@ const DashboardContent = () => {
       setLoading(true);
 
       // Fetch projects
-      const projectsResponse = await axios.get(
-        "http://localhost:8000/api/v1/project/getProjects"
-      );
+      const projectsResponse = await api.get("/project/getProjects");
 
       if (projectsResponse.data.success) {
         const projectsData = projectsResponse.data.projects || [];

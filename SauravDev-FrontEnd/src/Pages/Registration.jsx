@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../Services/apiConfig.js";
 import "../style/Registration.css";
 
 const Registeration = () => {
@@ -132,10 +132,7 @@ const Registeration = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/v1/auth/register",
-        formData
-      );
+      const response = await api.post("/auth/register", formData);
 
       if (response.data.success) {
         setRegistrationSuccess(true);
