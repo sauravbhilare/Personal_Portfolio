@@ -96,10 +96,10 @@
   top: 1rem;
   left: 1rem;
   z-index: 101;
-  background: #2a9d8f;
-  color: white;
+  /* background: #2a9d8f; */
+  color: black;
   border: none;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   width: 40px;
   height: 40px;
   align-items: center;
@@ -107,7 +107,7 @@
   cursor: pointer;
   font-size: 1.2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(42, 157, 143, 0.3);
+  /* box-shadow: 0 2px 8px rgba(42, 157, 143, 0.3); */
 }
 
 .menu-toggle:hover {
@@ -353,5 +353,36 @@
 @media (min-width: 1025px) {
   .main-content {
     margin-left: 280px !important;
+  }
+}
+
+
+
+/* Ensure body doesn't scroll when menu is open on mobile */
+body.menu-open {
+  overflow: hidden;
+}
+
+/* Smooth transitions for mobile menu */
+.verticle-menu {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Improved mobile overlay */
+.menu-overlay {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.menu-overlay.mobile-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
   }
 }
