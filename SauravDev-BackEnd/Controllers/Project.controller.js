@@ -28,9 +28,7 @@ const CreateProject = async (req, res) => {
 
     const processedTags = tags ? tags.split(",").map((t) => t.trim()) : [];
 
-    const imageUrl = req.file
-      ? `/uploads/${req.file.filename}`
-      : "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
     const project = new Project({
       title,
