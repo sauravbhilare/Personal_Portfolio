@@ -3,7 +3,7 @@ import "../style/About.css";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import useImg from "../assets/PHOTOS.jpeg";
-import Resume from "../assets/SauravBhilareFrontDevResume.pdf";
+import Resume from "../assets/SauravBhilare-Resume.pdf";
 
 const About = () => {
   const skillRefs = useRef([]);
@@ -86,7 +86,7 @@ const About = () => {
       // Method 1: Using the imported Resume directly (Recommended)
       const link = document.createElement("a");
       link.href = Resume; // ✅ Fixed: Removed curly braces
-      link.download = "Saurav_Bhilare_Frontend_Developer_Resume.pdf";
+      link.download = "SauravBhilare-Resume.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

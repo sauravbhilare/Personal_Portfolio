@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import "../style/Resume.css";
-import Resumefile from "../assets/SauravBhilareFrontDevResume.pdf";
+import Resumefile from "../assets/SauravBhilare-Resume.pdf";
 
 const Resume = () => {
   // FIXED: Download Resume Function
@@ -11,7 +11,7 @@ const Resume = () => {
       // Method 1: Using the imported Resume directly (Recommended)
       const link = document.createElement("a");
       link.href = Resumefile; // ✅ Fixed: Removed curly braces
-      link.download = "Saurav_Bhilare_Frontend_Developer_Resume.pdf";
+      link.download = "SauravBhilare-Resume.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
