@@ -15,36 +15,6 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const initialProjects = [
-    {
-      id: 1,
-      title: "E-Commerce Website",
-      description: "A full-stack e-commerce platform with React and Node.js",
-      category: "web",
-      status: "in-progress",
-      progress: 75,
-      tags: ["React", "Node.js", "MongoDB"],
-      liveLink: "https://demo-ecommerce.com",
-      githubLink: "https://github.com/saurav/ecommerce",
-      image:
-        "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=E-Commerce",
-      createdAt: "2024-01-15",
-    },
-    {
-      id: 2,
-      title: "Portfolio Website",
-      description: "Personal portfolio website with modern design",
-      category: "web",
-      status: "completed",
-      progress: 100,
-      tags: ["React", "CSS3", "JavaScript"],
-      liveLink: "https://saurav.dev",
-      githubLink: "https://github.com/saurav/portfolio",
-      image: "https://via.placeholder.com/400x200/264653/ffffff?text=Portfolio",
-      createdAt: "2024-01-10",
-    },
-  ];
-
   // Fetch user profile data on component mount
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -62,15 +32,6 @@ const Dashboard = () => {
     };
 
     fetchUserProfile();
-
-    // Load projects safely
-    const saved = localStorage.getItem("userProjects");
-    if (saved) {
-      setProjects(JSON.parse(saved));
-    } else {
-      setProjects(initialProjects);
-      localStorage.setItem("userProjects", JSON.stringify(initialProjects));
-    }
   }, [user, navigate]);
 
   const handleLogout = () => {

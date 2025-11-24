@@ -39,9 +39,9 @@ const ViewProjects = () => {
 
   // Fix image URL
   const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      return "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
-    }
+    // if (!imagePath) {
+    //   return "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
+    // }
 
     if (imagePath.startsWith("http")) {
       return imagePath;
@@ -338,8 +338,7 @@ const ViewProjects = () => {
                   src={getImageUrl(project.image)}
                   alt={project.title}
                   onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
+                    e.target.src = "";
                   }}
                 />
                 <div className="project-actions">
