@@ -3,6 +3,7 @@ import "../style/About.css";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import useImg from "../assets/PHOTOS.jpeg";
+import Resume from "../assets/SauravBhilareFrontDevResume.pdf";
 
 const About = () => {
   const skillRefs = useRef([]);
@@ -79,11 +80,44 @@ const About = () => {
     }
   }, [isVisible]);
 
+  // FIXED: Download Resume Function
   const downloadResume = () => {
-    const link = document.createElement("a");
-    link.href = "/path-to-your-resume.pdf";
-    link.download = "Saurav_Bhilare_Resume.pdf";
-    link.click();
+    try {
+      // Method 1: Using the imported Resume directly (Recommended)
+      const link = document.createElement("a");
+      link.href = Resume; // ✅ Fixed: Removed curly braces
+      link.download = "Saurav_Bhilare_Frontend_Developer_Resume.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading resume:", error);
+
+      // Fallback method
+      window.open(Resume, "_blank");
+    }
+  };
+
+  // Alternative Method 2: If Method 1 doesn't work
+  const downloadResumeAlternative = () => {
+    // Create a blob URL for better compatibility
+    fetch(Resume)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "Saurav_Bhilare_Frontend_Developer_Resume.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error downloading resume:", error);
+        // Final fallback - open in new tab
+        window.open(Resume, "_blank");
+      });
   };
 
   const contactMe = () => {
@@ -109,9 +143,14 @@ const About = () => {
               <i className="fas fa-download"></i>
               Download Resume
             </button>
+            {/* Optional: Add alternative button for testing */}
+            {/* <button className="download-btn-alt" onClick={downloadResumeAlternative} style={{marginLeft: '10px'}}>
+              <i className="fas fa-download"></i>
+              Download (Alt)
+            </button> */}
           </div>
 
-          {/* Main Content - Original Layout */}
+          {/* Rest of your component remains the same */}
           <div className="about-content">
             <div className="about-img">
               <img src={useImg} alt="Saurav Bhilare" />

@@ -2,8 +2,49 @@ import React from "react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import "../style/Resume.css";
+import Resumefile from "../assets/SauravBhilareFrontDevResume.pdf";
 
 const Resume = () => {
+  // FIXED: Download Resume Function
+  const downloadResume = () => {
+    try {
+      // Method 1: Using the imported Resume directly (Recommended)
+      const link = document.createElement("a");
+      link.href = Resumefile; // ✅ Fixed: Removed curly braces
+      link.download = "Saurav_Bhilare_Frontend_Developer_Resume.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading resume:", error);
+
+      // Fallback method
+      window.open(Resume, "_blank");
+    }
+  };
+
+  // Alternative Method 2: If Method 1 doesn't work
+  const downloadResumeAlternative = () => {
+    // Create a blob URL for better compatibility
+    fetch(Resume)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "Saurav_Bhilare_Frontend_Developer_Resume.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error downloading resume:", error);
+        // Final fallback - open in new tab
+        window.open(Resume, "_blank");
+      });
+  };
+
   return (
     <>
       <Navbar />
@@ -15,11 +56,7 @@ const Resume = () => {
             skills
           </p>
           <div className="btn-container">
-            <a
-              className="download-btn"
-              href="../../src/assets/SauravBhilareFrontDevResume.pdf"
-              download
-            >
+            <a className="download-btn" onClick={downloadResume}>
               <i className="fas fa-download"></i> Download Resume
             </a>
           </div>
