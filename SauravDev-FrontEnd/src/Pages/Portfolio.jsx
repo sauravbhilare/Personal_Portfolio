@@ -17,6 +17,31 @@ const Portfolio = () => {
     fetchProjects();
   }, []);
 
+  // Fix image URL function - Same as in ViewProjects
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
+    }
+
+    if (imagePath.startsWith("http")) {
+      return imagePath;
+    }
+
+    // Get your API URL from environment variables
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    // Remove /api/v1 to get the base domain
+    const baseUrl = apiUrl.replace("/api/v1", "");
+
+    // For paths starting with /uploads
+    if (imagePath.startsWith("/uploads")) {
+      return `${baseUrl}${imagePath}`;
+    }
+
+    // For relative paths without /uploads
+    return `${baseUrl}/uploads/${imagePath}`;
+  };
+
   const fetchProjects = async () => {
     try {
       setLoading(true);
@@ -28,13 +53,12 @@ const Portfolio = () => {
         // Transform the API data to match the component structure
         const transformedProjects = projects.map((project) => ({
           id: project._id,
-          image: project.image.startsWith("/uploads")
-            ? `http://localhost:8000${project.image}`
-            : project.image,
+          image: getImageUrl(project.image), // Use the function here
           alt: project.title,
           title: project.title,
           description: project.description,
           tags: project.tags || [],
+          status: project.status,
           liveDemo: project.liveLink || "#",
           github: project.githubLink || "#",
         }));
@@ -158,7 +182,13 @@ const Portfolio = () => {
                       />
                       {/* Show project status badge */}
                       <div className="project-status-badge">
-                        <span className="status-completed">{item.status}</span>
+                        <span
+                          className={`status-${
+                            item.status?.replace("-", "") || "completed"
+                          }`}
+                        >
+                          {item.status}
+                        </span>
                       </div>
                     </div>
                     <div className="portfolio-info">

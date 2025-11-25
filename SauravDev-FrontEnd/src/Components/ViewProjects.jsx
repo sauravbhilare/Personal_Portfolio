@@ -39,45 +39,64 @@ const ViewProjects = () => {
 
   // Fix image URL
   const getImageUrl = (imagePath) => {
-    // if (!imagePath) {
-    //   return "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
-    // }
+    if (!imagePath) {
+      return "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
+    }
 
     if (imagePath.startsWith("http")) {
       return imagePath;
     }
 
+    // Get your API URL from environment variables
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    // Remove /api/v1 to get the base domain
+    const baseUrl = apiUrl.replace("/api/v1", "");
+
+    // For paths starting with /uploads
     if (imagePath.startsWith("/uploads")) {
-      return `http://localhost:8000${imagePath}`;
+      return `${baseUrl}${imagePath}`;
     }
 
-    return imagePath;
+    return `${baseUrl}/uploads/${imagePath}`;
   };
 
-  // Handle project update
+  // Handle project update - FIXED VERSION
   const handleUpdateProject = async (updatedProject) => {
     try {
       setActionLoading("update");
       const formData = new FormData();
 
-      // Append all fields
-      formData.append("title", updatedProject.title);
-      formData.append("description", updatedProject.description);
-      formData.append(
-        "tags",
-        Array.isArray(updatedProject.tags)
+      // Append all fields - FIXED: Send proper format for backend
+      formData.append("title", updatedProject.title || "");
+      formData.append("description", updatedProject.description || "");
+
+      // FIXED: Handle tags properly - backend expects comma-separated string or array
+      const tagsValue =
+        typeof updatedProject.tags === "string"
+          ? updatedProject.tags
+          : Array.isArray(updatedProject.tags)
           ? updatedProject.tags.join(",")
-          : updatedProject.tags
-      );
+          : "";
+      formData.append("tags", tagsValue);
+
       formData.append("liveLink", updatedProject.liveLink || "");
       formData.append("githubLink", updatedProject.githubLink || "");
-      formData.append("category", updatedProject.category);
-      formData.append("status", updatedProject.status);
+      formData.append("category", updatedProject.category || "web");
+      formData.append("status", updatedProject.status || "planning"); // FIXED: Ensure status is sent
 
       // Append new image if selected
       if (editImage) {
         formData.append("image", editImage);
       }
+
+      // Debug: Log what's being sent
+      console.log("Updating project with:", {
+        title: updatedProject.title,
+        status: updatedProject.status,
+        tags: tagsValue,
+        hasImage: !!editImage,
+      });
 
       const response = await api.put(
         `/project/updateProject/${editingProject}`,
@@ -101,6 +120,7 @@ const ViewProjects = () => {
       }
     } catch (error) {
       console.error("Error updating project:", error);
+      console.error("Error details:", error.response?.data);
       alert("Failed to update project. Please try again.");
     } finally {
       setActionLoading(null);
@@ -135,14 +155,19 @@ const ViewProjects = () => {
     }
   };
 
-  // Handle edit start
+  // Handle edit start - FIXED: Better initial state
   const handleEdit = (project) => {
     setEditingProject(project._id);
     setEditForm({
-      ...project,
+      title: project.title || "",
+      description: project.description || "",
       tags: Array.isArray(project.tags)
         ? project.tags.join(", ")
-        : project.tags,
+        : project.tags || "",
+      liveLink: project.liveLink || "",
+      githubLink: project.githubLink || "",
+      category: project.category || "web",
+      status: project.status || "planning",
     });
     setImagePreview(getImageUrl(project.image)); // Set current image as preview
     setEditImage(null);
@@ -152,6 +177,13 @@ const ViewProjects = () => {
   const handleEditImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (5MB limit to match backend)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert("Image size should be less than 5MB");
+        return;
+      }
+
       setEditImage(file);
 
       // Create preview
@@ -166,12 +198,16 @@ const ViewProjects = () => {
   // Handle remove image
   const handleRemoveImage = () => {
     setEditImage(null);
-    setImagePreview(null);
-    // Keep the original image in editForm but we'll handle this in the update
+    setImagePreview(getImageUrl(editForm.image)); // Reset to original image
   };
 
   // Handle save edit
   const handleSave = () => {
+    // Validate required fields before saving
+    if (!editForm.title?.trim() || !editForm.description?.trim()) {
+      alert("Please fill in all required fields (title and description)");
+      return;
+    }
     handleUpdateProject(editForm);
   };
 
@@ -338,7 +374,8 @@ const ViewProjects = () => {
                   src={getImageUrl(project.image)}
                   alt={project.title}
                   onError={(e) => {
-                    e.target.src = "";
+                    e.target.src =
+                      "https://via.placeholder.com/400x200/2a9d8f/ffffff?text=Project+Image";
                   }}
                 />
                 <div className="project-actions">

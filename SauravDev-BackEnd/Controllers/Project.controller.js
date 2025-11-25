@@ -5,54 +5,45 @@ const CreateProject = async (req, res) => {
     const { title, description, tags, liveLink, githubLink, category, status } =
       req.body;
 
-    console.log("Received data:", req.body);
-    console.log("Received file:", req.file);
+    // Process tags
+    const processedTags = Array.isArray(tags)
+      ? tags
+      : tags.split(",").map((t) => t.trim());
 
-    if (!title || !description) {
-      return res.status(400).json({
-        message: "Title and description are required",
-        success: false,
-      });
+    // Calculate progress based on status
+    let progress = 0;
+    if (status === "completed") progress = 100;
+    else if (status === "in-progress") progress = 50;
+
+    // Handle image URL - USING ENV VARIABLE
+    let imageUrl = "";
+    if (req.file) {
+      imageUrl = `${process.env.CLIENT_URL}/uploads/${req.file.filename}`;
     }
 
-    // Handle file validation error from multer
-    if (req.fileValidationError) {
-      return res.status(400).json({
-        message: req.fileValidationError,
-        success: false,
-      });
-    }
-
-    let progress =
-      status === "completed" ? 100 : status === "in-progress" ? 50 : 0;
-
-    const processedTags = tags ? tags.split(",").map((t) => t.trim()) : [];
-
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-
-    const project = new Project({
+    const newProject = new Project({
       title,
       description,
-      image: imageUrl,
       tags: processedTags,
-      liveLink: liveLink || "",
-      githubLink: githubLink || "",
-      category: category || "web",
-      status: status || "planning",
+      liveLink,
+      githubLink,
+      category,
+      status,
       progress,
+      image: imageUrl,
     });
 
-    await project.save();
+    await newProject.save();
 
     res.status(201).json({
       message: "Project created successfully",
       success: true,
-      project,
+      project: newProject,
     });
   } catch (error) {
     console.error("Error creating project:", error);
     res.status(500).json({
-      message: "Server error",
+      message: "Server error while creating project",
       success: false,
       error: error.message,
     });
@@ -61,11 +52,32 @@ const CreateProject = async (req, res) => {
 
 const GetProjects = async (req, res) => {
   try {
-    const projects = await Project.find();
-    res.status(200).json({ projects, success: true });
+    const projects = await Project.find().sort({ createdAt: -1 });
+
+    // Ensure all projects have full image URLs
+    const projectsWithFullUrls = projects.map((project) => {
+      if (project.image && !project.image.startsWith("http")) {
+        // Convert relative paths to full URLs
+        return {
+          ...project._doc,
+          image: `${process.env.CLIENT_URL}${project.image}`,
+        };
+      }
+      return project;
+    });
+
+    res.status(200).json({
+      message: "Projects fetched successfully",
+      success: true,
+      projects: projectsWithFullUrls,
+    });
   } catch (error) {
-    console.error("Error getting projects:", error);
-    res.status(500).json({ message: "Server error", success: false });
+    console.error("Error fetching projects:", error);
+    res.status(500).json({
+      message: "Server error while fetching projects",
+      success: false,
+      error: error.message,
+    });
   }
 };
 const UpdateProject = async (req, res) => {
@@ -111,9 +123,9 @@ const UpdateProject = async (req, res) => {
     project.progress = progress;
     project.updatedAt = new Date();
 
-    // Handle image update if new image is provided
+    // Handle image update if new image is provided - USING ENV VARIABLE
     if (req.file) {
-      project.image = `/uploads/${req.file.filename}`;
+      project.image = `${process.env.CLIENT_URL}/uploads/${req.file.filename}`;
     }
 
     await project.save();

@@ -16,6 +16,54 @@ const CreateProject = () => {
 
   const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Required fields validation
+    if (!formData.title.trim()) {
+      newErrors.title = "Project title is required";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "Project description is required";
+    }
+
+    // Image validation (optional but if provided, validate)
+    if (formData.image) {
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (formData.image.size > maxSize) {
+        newErrors.image = "Image size should be less than 5MB";
+      }
+
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+      if (!validTypes.includes(formData.image.type)) {
+        newErrors.image = "Only JPG, PNG, and GIF images are allowed";
+      }
+    }
+
+    // URL validation (optional fields)
+    if (formData.liveLink && !isValidUrl(formData.liveLink)) {
+      newErrors.liveLink = "Please enter a valid URL";
+    }
+
+    if (formData.githubLink && !isValidUrl(formData.githubLink)) {
+      newErrors.githubLink = "Please enter a valid URL";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,14 +71,49 @@ const CreateProject = () => {
       ...prev,
       [name]: value,
     }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
+      // Validate image before setting
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+
+      if (file.size > maxSize) {
+        setErrors((prev) => ({
+          ...prev,
+          image: "Image size should be less than 5MB",
+        }));
+        return;
+      }
+
+      if (!validTypes.includes(file.type)) {
+        setErrors((prev) => ({
+          ...prev,
+          image: "Only JPG, PNG, and GIF images are allowed",
+        }));
+        return;
+      }
+
       setFormData((prev) => ({
         ...prev,
         image: file,
+      }));
+
+      // Clear image error
+      setErrors((prev) => ({
+        ...prev,
+        image: "",
       }));
 
       // Create preview
@@ -42,17 +125,35 @@ const CreateProject = () => {
     }
   };
 
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      image: null,
+    }));
+    setImagePreview(null);
+    setErrors((prev) => ({
+      ...prev,
+      image: "",
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      alert("Please fix the errors before submitting.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("tags", formData.tags);
-      formDataToSend.append("liveLink", formData.liveLink);
-      formDataToSend.append("githubLink", formData.githubLink);
+      formDataToSend.append("title", formData.title.trim());
+      formDataToSend.append("description", formData.description.trim());
+      formDataToSend.append("tags", formData.tags.trim());
+      formDataToSend.append("liveLink", formData.liveLink.trim());
+      formDataToSend.append("githubLink", formData.githubLink.trim());
       formDataToSend.append("category", formData.category);
       formDataToSend.append("status", formData.status);
 
@@ -65,6 +166,7 @@ const CreateProject = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        timeout: 30000, // 30 second timeout
       });
 
       if (res.data.success) {
@@ -82,6 +184,7 @@ const CreateProject = () => {
           status: "planning",
         });
         setImagePreview(null);
+        setErrors({});
       } else {
         alert("Error: " + res.data.message);
       }
@@ -95,6 +198,8 @@ const CreateProject = () => {
       } else if (error.request) {
         // Request was made but no response received
         alert("Network error: Please check your connection and try again.");
+      } else if (error.code === "ECONNABORTED") {
+        alert("Request timeout: Please try again.");
       } else {
         // Something else happened
         alert("Error: " + error.message);
@@ -104,6 +209,21 @@ const CreateProject = () => {
     }
   };
 
+  const handleClearForm = () => {
+    setFormData({
+      title: "",
+      image: null,
+      description: "",
+      tags: "",
+      liveLink: "",
+      githubLink: "",
+      category: "web",
+      status: "planning",
+    });
+    setImagePreview(null);
+    setErrors({});
+  };
+
   return (
     <div className="create-project">
       <div className="create-project-header">
@@ -111,7 +231,7 @@ const CreateProject = () => {
         <p>Add your project details and showcase your work</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="project-form">
+      <form onSubmit={handleSubmit} className="project-form" noValidate>
         <div className="form-section">
           <h3>Basic Information</h3>
 
@@ -126,7 +246,11 @@ const CreateProject = () => {
                 onChange={handleInputChange}
                 placeholder="Enter project title"
                 required
+                className={errors.title ? "error" : ""}
               />
+              {errors.title && (
+                <span className="error-message">{errors.title}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -157,7 +281,11 @@ const CreateProject = () => {
               placeholder="Describe your project, features, and technologies used..."
               rows="5"
               required
+              className={errors.description ? "error" : ""}
             ></textarea>
+            {errors.description && (
+              <span className="error-message">{errors.description}</span>
+            )}
           </div>
         </div>
 
@@ -174,19 +302,31 @@ const CreateProject = () => {
               />
               <label htmlFor="image" className="image-upload-label">
                 {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="image-preview"
-                  />
+                  <div className="image-preview-container">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="image-preview"
+                    />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={handleRemoveImage}
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
                 ) : (
                   <div className="upload-placeholder">
                     <i className="fas fa-cloud-upload-alt"></i>
                     <span>Click to upload project image</span>
-                    <small>Recommended: 800x400px</small>
+                    <small>Recommended: 800x400px • Max: 5MB</small>
                   </div>
                 )}
               </label>
+              {errors.image && (
+                <span className="error-message">{errors.image}</span>
+              )}
             </div>
           </div>
         </div>
@@ -207,7 +347,11 @@ const CreateProject = () => {
                 value={formData.liveLink}
                 onChange={handleInputChange}
                 placeholder="https://your-project.com"
+                className={errors.liveLink ? "error" : ""}
               />
+              {errors.liveLink && (
+                <span className="error-message">{errors.liveLink}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -222,7 +366,11 @@ const CreateProject = () => {
                 value={formData.githubLink}
                 onChange={handleInputChange}
                 placeholder="https://github.com/username/repo"
+                className={errors.githubLink ? "error" : ""}
               />
+              {errors.githubLink && (
+                <span className="error-message">{errors.githubLink}</span>
+              )}
             </div>
           </div>
         </div>
@@ -264,19 +412,8 @@ const CreateProject = () => {
           <button
             type="button"
             className="btn-secondary"
-            onClick={() => {
-              setFormData({
-                title: "",
-                image: null,
-                description: "",
-                tags: "",
-                liveLink: "",
-                githubLink: "",
-                category: "web",
-                status: "planning",
-              });
-              setImagePreview(null);
-            }}
+            onClick={handleClearForm}
+            disabled={isLoading}
           >
             Clear Form
           </button>
